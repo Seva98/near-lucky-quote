@@ -2,33 +2,52 @@ import { storage, Context } from "near-sdk-core"
 
 @nearBindgen
 export class Contract {
-  private message: string = 'hello world'
 
-  // return the string 'hello world'
-  helloWorld(): string {
-    return this.message
-  }
+  private quotes: Array<string> = [
+    "“There is no end to education. It is not that you read a book, pass an examination, and finish with education. The whole of life, from the moment you are born to the moment you die, is a process of learning.” – Jiddu Krishnamurti",
+    "“We now accept the fact that learning is a lifelong process of keeping abreast of change. And the most pressing task is to teach people how to learn.” – Peter Drucker",
+    "“I am always ready to learn although I do not always like being taught.” – Winston Churchill",
+    "“Live as if you were to die tomorrow. Learn as if you were to live forever.” – Mahatma Gandhi",
+    "“Wisdom is not a product of schooling but of the lifelong attempt to acquire it.” – Albert Einstein",
+    "“One learns from books and example only that certain things can be done. Actual learning requires that you do those things.” – Frank Herbert",
+    "“Tell me and I forget, teach me and I may remember, involve me and I learn.” – Benjamin Franklin",
+    "“Develop a passion for learning. If you do, you will never cease to grow.” – Anthony J. D’Angelo",
+    "“One hour per day of study in your chosen field is all it takes. One hour per day of study will put you at the top of your field within three years. Within five years you’ll be a national authority. In seven years, you can be one of the best people in the world at what you do.” – Earl Nightingale",
+  "“You don’t understand anything until you learn it more than one way.” – Marvin Minsky"]
 
-  // read the given key from account (contract) storage
-  read(key: string): string {
-    if (isKeyInStorage(key)) {
-      return `✅ Key [ ${key} ] has value [ ${storage.getString(key)!} ]`
-    } else {
-      return `🚫 Key [ ${key} ] not found in storage. ( ${this.storageReport()} )`
-    }
-  }
-
-  // write the given value at the given key to account (contract) storage
   @mutateState()
-  write(key: string, value: string): string {
-    storage.set(key, value)
-    return `✅ Data saved. ( ${this.storageReport()} )`
+  generateLuckyQuote(): string {
+    const predecessor = Context.predecessor
+    const contractName = Context.contractName
+    
+    const quote = this.getQuoteFromSender(predecessor)
+    const filler = new Array<string>(quote.length).fill('*').toString().replaceAll(',', '')
+
+    let count: u16 = 0
+    let key = 'quotesCount'
+      //count = storage.get<u16>(key, 0) + 1
+
+
+    return `Quote about learning from ${contractName} to ${predecessor}:
+${filler}
+${quote}
+${filler}`
   }
 
-  // private helper method used by read() and write() above
-  private storageReport(): string {
-    return `storage [ ${Context.storageUsage} bytes ]`
+  private getQuoteFromSender = (predecessor: string): string => {
+    const charCodes: Array<i32> = []
+    for (var i = 0; i < predecessor.length; i++) {
+      charCodes.push(predecessor.charCodeAt(i))
+    }
+    let sum = 0 
+    for (var j = 0; j < charCodes.length; j++) {
+      sum += charCodes[j]
+    }
+    const luckyNumber = sum % 10
+    return this.quotes[luckyNumber]
   }
+
+
 }
 
 /**
