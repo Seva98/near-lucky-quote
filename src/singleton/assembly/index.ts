@@ -20,21 +20,21 @@ export class Contract {
     const predecessor = Context.predecessor
     const contractName = Context.contractName
     
-    const quote = this.getQuoteFromSender(predecessor)
+    const quote: string = this.getQuoteFromSender(predecessor)
     const filler = new Array<string>(quote.length).fill('*').toString().replaceAll(',', '')
 
-    let count: u16 = 0
-    let key = 'quotesCount'
-      //count = storage.get<u16>(key, 0) + 1
+    let count = this.getCountFromStorage()
+    count = this.incrementCountInStorage(count)
 
-
-    return `Quote about learning from ${contractName} to ${predecessor}:
+    return `You are person #${count} who used this NEAR Smart Contract!
+Quote generator from ${contractName} takes your NEAR wallet id ${predecessor} and gives you a random quote based on your NEAR wallet id.
+Please find below quote about learning that has been assigned to your id:
 ${filler}
 ${quote}
 ${filler}`
   }
 
-  private getQuoteFromSender = (predecessor: string): string => {
+  private getQuoteFromSender(predecessor: string):string {
     const charCodes: Array<i32> = []
     for (var i = 0; i < predecessor.length; i++) {
       charCodes.push(predecessor.charCodeAt(i))
@@ -47,26 +47,38 @@ ${filler}`
     return this.quotes[luckyNumber]
   }
 
-
+  private getCountFromStorage(): string {
+    if (isKeyInStorage('quotesCount' )) {
+      return storage.getString('quotesCount' )!
+    } else {
+      return "0"
+    }
+  }
+  
+  private incrementCountInStorage(count: string): string {
+    let numCount: number = parseInt(count)
+    numCount += 1
+    const newCount = numCount.toString().split('.')[0]
+    storage.set('quotesCount', newCount)
+    return newCount
+  }
 }
 
 /**
  * This function exists only to avoid a compiler error
  *
-
 ERROR TS2339: Property 'contains' does not exist on type 'src/singleton/assembly/index/Contract'.
-
      return this.contains(key);
                  ~~~~~~~~
  in ~lib/near-sdk-core/storage.ts(119,17)
-
 /Users/sherif/Documents/code/near/_projects/edu.t3/starter--near-sdk-as/node_modules/asbuild/dist/main.js:6
         throw err;
         ^
-
  * @param key string key in account storage
  * @returns boolean indicating whether key exists
  */
 function isKeyInStorage(key: string): bool {
   return storage.hasKey(key)
 }
+
+
