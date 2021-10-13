@@ -20,7 +20,7 @@ export class Contract {
     const predecessor = Context.predecessor
     const contractName = Context.contractName
     
-    const quote: string = this.getQuoteFromSender(predecessor)
+    const quote: string = this.generateQuoteFromSender(predecessor)
     const filler = new Array<string>(quote.length).fill('*').toString().replaceAll(',', '')
 
     let count = this.getCountFromStorage()
@@ -34,7 +34,7 @@ ${quote}
 ${filler}`
   }
 
-  private getQuoteFromSender(predecessor: string):string {
+  private generateQuoteFromSender(predecessor: string):string {
     const charCodes: Array<i32> = []
     for (var i = 0; i < predecessor.length; i++) {
       charCodes.push(predecessor.charCodeAt(i))
