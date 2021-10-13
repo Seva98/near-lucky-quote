@@ -10,4 +10,4 @@
 5. Set CONTRACT env variable with that account id `export CONTRACT=<dev-123-456>`
 6. Call method from deployed smart contract `near call $CONTRACT generateLuckyQuote --accountId $CONTRACT`
 
-Check out [block chain code](https://github.com/Seva98/near-lucky-quote) from [NEAR Certificated Developer I](https://hackmd.io/@nearly-learning/ncd-1-1d) that this application is using
+Check out [front end code](https://github.com/Seva98/near-lucky-quote-frontend) from [NEAR Certificated Developer II](https://hackmd.io/@nearly-learning/ncd-2-1d) that this application is using
